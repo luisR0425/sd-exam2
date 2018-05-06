@@ -3,31 +3,31 @@ version: "3"
 services:
 
   whoami:
-    image: tutum/hello-world
+    image: tutum/hello-world #imagen del contenedor
     networks:
-      - webnet
+      - webnet #Para la red
     ports:
-      - "192.168.1.13:80:80"
+      - "192.168.1.13:80:80" 
     logging:
-      driver: "fluentd" # Logging Driver
+      driver: "fluentd" # Logging Driver 
       options:
-        fluentd-address: 192.168.1.22:24224
-        tag: docker.{{.Name}}    # TAG
-    deploy:
-      restart_policy:
+        fluentd-address: 192.168.1.22:24224  #Especifique una dirección de socket para conectarse al daemon Fluentd
+        tag: docker.{{.Name}}    # TAG Es decir el hostname de cada contenedor
+    deploy: #Para hacer el aprovisionamiento usando docker swarm y stack deploy
+      restart_policy: #Configura cómo reiniciar los contenedores cuando se cierran
            condition: on-failure
            delay: 20s
            max_attempts: 3
            window: 120s
       mode: replicated
-      replicas: 4
+      replicas: 4 #indica las replicas que se quieren de ese contenedor
       resources:
         limits:
-          cpus: "0.1"
-          memory: 20M
+          cpus: "0.1" #restricción de cpu de 10%
+          memory: 20M # Restricción de memoria de 20M
       placement:
         constraints:
-          - node.role == worker
+          - node.role == worker # Para indicarle que es un nodo worker
       update_config:
         delay: 2s
 
@@ -40,7 +40,7 @@ services:
       networks:
         - webnet
       logging:
-        driver: "fluentd"
+        driver: "fluentd" # Logging Driver 
         options:
          tag: visualizer   #TAG
       deploy:
@@ -61,7 +61,7 @@ services:
     volumes:
       - ./fluentd/conf:/fluentd/etc
     ports:
-      - "24224:24224/tcp"
+      - "24224:24224/tcp" # puertos que usa fluentd
       - "24224:24224/udp"
     networks:
       - webnet
@@ -84,11 +84,11 @@ services:
       - "9200:9200"
     networks:
       - webnet
-    environment:
+    environment: #variables de ambiente
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     logging:
-        driver: "json-file"
+        driver: "json-file" # Logging Driver 
         options:
           max-size: 10M
           max-file: 1  
@@ -135,7 +135,7 @@ services:
         delay: 2s
 
 volumes:
-  my-vol:
+  my-vol: #volumen interno para elasticsearch
 
 networks:
-  webnet:
+webnet: #crea la red
